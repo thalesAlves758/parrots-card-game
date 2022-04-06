@@ -9,10 +9,12 @@ const imagesNames = [
     "tripletsparrot.gif",
     "unicornparrot.gif"
 ];
+const MILLISECONDS = 1000;
 
 let gameDivEl;
 let currentTurnedCards;
 let cardsNumber;
+let movesAmount;
 
 function init() {
     cardsNumber = Number(prompt("Com quantas cartas você deseja jogar?"));
@@ -27,6 +29,7 @@ function init() {
 
     gameDivEl = document.querySelector('.game');
     currentTurnedCards = [];
+    movesAmount = 0;
 
     distributeCards();
 }
@@ -56,6 +59,7 @@ function getCardElementWithImage(imageName) {
 function turnCard(cardEl) {
     cardEl.classList.add("turned");
     currentTurnedCards.push(cardEl);
+    movesAmount++;
 
     checkCardPair();
 }
@@ -64,9 +68,21 @@ function checkCardPair() {
     if(currentTurnedCards.length === 2) {
         const areEqual = checkIfAreEqual(currentTurnedCards);
 
-        if(!areEqual) unturnCards(currentTurnedCards);
+        if(areEqual) checkIfWon();
+        else unturnCards(currentTurnedCards);
 
         currentTurnedCards = [];
+    }
+}
+
+function checkIfWon() {
+    const turnedCardsAmount = gameDivEl.querySelectorAll(".turned").length;
+    console.log(turnedCardsAmount);
+
+    if(turnedCardsAmount === cardsNumber) {
+        setTimeout(() => {
+            alert(`Você ganhou em ${movesAmount} jogadas!`); 
+        }, MILLISECONDS);
     }
 }
 
@@ -85,7 +101,7 @@ function unturnCards(cards) {
         for(let i = 0; i < cards.length; i++) {
             cards[i].classList.remove("turned");
         }
-    }, 1000);
+    }, MILLISECONDS);
 }
 
 function getShuffledCards() {
