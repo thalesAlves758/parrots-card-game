@@ -68,10 +68,18 @@ function checkCardPair() {
     if(currentTurnedCards.length === 2) {
         const areEqual = checkIfAreEqual(currentTurnedCards);
 
-        if(areEqual) checkIfWon();
-        else unturnCards(currentTurnedCards);
+        if(areEqual) {
+            removeClickEvent(currentTurnedCards);
+            checkIfWon();
+        } else unturnCards(currentTurnedCards);
 
         currentTurnedCards = [];
+    }
+}
+
+function removeClickEvent(cards) {
+    for(let i = 0; i < cards.length; i++) {
+        cards[i].removeAttribute("onclick");
     }
 }
 
