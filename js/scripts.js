@@ -10,6 +10,8 @@ const imagesNames = [
     "unicornparrot.gif"
 ];
 
+let gameDivEl;
+let currentTurnedCards;
 let cardsNumber;
 
 function init() {
@@ -23,6 +25,9 @@ function init() {
         isInvalidNumber = isNaN(cardsNumber) || cardsNumber % 2 !== 0 || (cardsNumber < 4 || cardsNumber > 14);
     }
 
+    gameDivEl = document.querySelector('.game');
+    currentTurnedCards = [];
+
     distributeCards();
 }
 
@@ -34,7 +39,7 @@ function distributeCards() {
         cardsElements += getCardElementWithImage(shuffledCards[i]);
     }
 
-    document.querySelector('.game').innerHTML = cardsElements;
+    gameDivEl.innerHTML = cardsElements;
 }
 
 function getCardElementWithImage(imageName) {
@@ -50,6 +55,37 @@ function getCardElementWithImage(imageName) {
 
 function turnCard(cardEl) {
     cardEl.classList.add("turned");
+    currentTurnedCards.push(cardEl);
+
+    checkCardPair();
+}
+
+function checkCardPair() {
+    if(currentTurnedCards.length === 2) {
+        const areEqual = checkIfAreEqual(currentTurnedCards);
+
+        if(!areEqual) unturnCards(currentTurnedCards);
+
+        currentTurnedCards = [];
+    }
+}
+
+function checkIfAreEqual(cards) {
+    const cardsImages = [];
+
+    for(let i = 0; i < cards.length; i++) {
+        cardsImages.push(cards[i].querySelector('.front img').getAttribute("src"));
+    }
+
+    return cardsImages[0] === cardsImages[1];
+}
+
+function unturnCards(cards) {
+    setTimeout(() => {
+        for(let i = 0; i < cards.length; i++) {
+            cards[i].classList.remove("turned");
+        }
+    }, 1000);
 }
 
 function getShuffledCards() {
