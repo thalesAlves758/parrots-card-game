@@ -38,7 +38,7 @@ function distributeCards() {
 }
 
 function getCardElementWithImage(imageName) {
-    return `<div class="card">
+    return `<div class="card" onclick="turnCard(this)">
         <div class="back face">
             <img src="images/front.png" alt="Frente da carta">
         </div>
@@ -46,6 +46,10 @@ function getCardElementWithImage(imageName) {
             <img src="images/${imageName}" alt="Figura">
         </div>
     </div>`;
+}
+
+function turnCard(cardEl) {
+    cardEl.classList.add("turned");
 }
 
 function getShuffledCards() {

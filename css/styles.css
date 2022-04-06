@@ -32,13 +32,35 @@ body {
 .game .card {
     width: 118px;
     height: 146px;
+    margin-bottom: 34px;
+    position: relative;
+}
+
+.card .face {
+    width: 100%;
+    height: 100%;
+    background-color: #A7E9AF;
+    border-radius: 5px;
+    border: 1px solid #99CEA8;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid #99CEA8;
-    background-color: #A7E9AF;
-    border-radius: 5px;
-    margin-bottom: 34px;
+    position: absolute;
+    backface-visibility: hidden;
+    transition: all .5s;
+    transform-style: preserve-3d;
+}
+
+.card .front {
+    transform: rotateY(180deg);
+}
+
+.card.turned .front {
+    transform: rotateY(0deg);
+}
+
+.card.turned .back {
+    transform: rotateY(-180deg);
 }
 
 .game .card:hover {
