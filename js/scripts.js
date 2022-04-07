@@ -35,6 +35,7 @@ function init() {
     movesAmount = 0;
     seconds = 0;
     timerEl = document.querySelector(".timer");
+    timerEl.innerHTML = seconds;
 
     distributeCards();
 }
@@ -100,8 +101,29 @@ function checkIfWon() {
 
         setTimeout(() => {
             alert(`Você ganhou em ${movesAmount} jogadas e em ${seconds} segundos!`); 
+
+            askIfWantContinue();
         }, MILLISECONDS);
     }
+}
+
+function askIfWantContinue() {
+    let userResponse;
+    let responseIsInvalid;
+
+    do {
+        userResponse = prompt("Gostaria de reiniciar a partida? (sim | não)");
+
+        if(userResponse) userResponse = userResponse.toLowerCase();
+
+        responseIsInvalid = userResponse !== "não" && userResponse !== "sim";
+
+        if(responseIsInvalid)
+            alert("Resposta inválida! Por favor, digite 'sim' ou 'não'.");
+    } while(responseIsInvalid || !userResponse);
+
+    if(userResponse === 'sim') init();
+    else alert("Obrigado por jogar Parrot Card Game! xD");
 }
 
 function checkIfAreEqual(cards) {
