@@ -11,13 +11,13 @@ const imagesNames = [
 ];
 const MILLISECONDS = 1000;
 
-let gameDivEl;
-let currentTurnedCards;
-let cardsNumber;
-let movesAmount;
-let seconds;
-let timerFunction;
-let timerEl;
+let gameDivEl,
+    currentTurnedCards,
+    cardsNumber,
+    movesAmount,
+    seconds,
+    timerFunction,
+    timerEl;
 
 function init() {
     cardsNumber = Number(prompt("Com quantas cartas você deseja jogar?"));
