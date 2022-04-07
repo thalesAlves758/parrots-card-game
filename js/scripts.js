@@ -58,6 +58,7 @@ function getCardElementWithImage(imageName) {
 
 function turnCard(cardEl) {
     cardEl.classList.add("turned");
+    cardEl.removeAttribute("onclick");
     currentTurnedCards.push(cardEl);
     movesAmount++;
 
@@ -68,24 +69,15 @@ function checkCardPair() {
     if(currentTurnedCards.length === 2) {
         const areEqual = checkIfAreEqual(currentTurnedCards);
 
-        if(areEqual) {
-            removeClickEvent(currentTurnedCards);
-            checkIfWon();
-        } else unturnCards(currentTurnedCards);
+        if(areEqual) checkIfWon();
+        else unturnCards(currentTurnedCards);
 
         currentTurnedCards = [];
     }
 }
 
-function removeClickEvent(cards) {
-    for(let i = 0; i < cards.length; i++) {
-        cards[i].removeAttribute("onclick");
-    }
-}
-
 function checkIfWon() {
     const turnedCardsAmount = gameDivEl.querySelectorAll(".turned").length;
-    console.log(turnedCardsAmount);
 
     if(turnedCardsAmount === cardsNumber) {
         setTimeout(() => {
@@ -108,6 +100,7 @@ function unturnCards(cards) {
     setTimeout(() => {
         for(let i = 0; i < cards.length; i++) {
             cards[i].classList.remove("turned");
+            cards[i].setAttribute("onclick", "turnCard(this)");
         }
     }, MILLISECONDS);
 }
@@ -125,7 +118,7 @@ function getRandomImagesList(imagesNumber) {
 }
 
 function shuffleArray(array) {
-    return [...array].sort(comparator);
+    return array.sort(comparator);
 }
 
 function comparator() {
@@ -133,12 +126,11 @@ function comparator() {
 }
 
 function duplicateArrayItems(array) {
-    const arrayOrigin = [...array];
     const target = [];
 
-    for (let i = 0; i < arrayOrigin.length; i++) {
-        target.push(arrayOrigin[i]);
-        target.push(arrayOrigin[i]);
+    for (let i = 0; i < array.length; i++) {
+        target.push(array[i]);
+        target.push(array[i]);
     }
 
     return target;
