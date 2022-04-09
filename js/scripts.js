@@ -1,4 +1,4 @@
-window.onload = init;
+const MILLISECONDS = 1000;
 
 const imagesNames = [
     "bobrossparrot.gif",
@@ -9,17 +9,16 @@ const imagesNames = [
     "tripletsparrot.gif",
     "unicornparrot.gif"
 ];
-const MILLISECONDS = 1000;
 
-let gameDivEl,
-    currentTurnedCards,
+let cards, 
+    currentTurnedCardsIndexes,
     cardsNumber,
     movesAmount,
     seconds,
     timerFunction,
     timerEl;
 
-function init() {
+const init = function() {
     cardsNumber = Number(prompt("Com quantas cartas você deseja jogar?"));
     let isInvalidNumber = isNaN(cardsNumber) || cardsNumber % 2 !== 0 || (cardsNumber < 4 || cardsNumber > 14);
     
@@ -30,76 +29,88 @@ function init() {
         isInvalidNumber = isNaN(cardsNumber) || cardsNumber % 2 !== 0 || (cardsNumber < 4 || cardsNumber > 14);
     }
 
-    gameDivEl = document.querySelector('.game');
-    currentTurnedCards = [];
+    currentTurnedCardsIndexes = [];
     movesAmount = 0;
     seconds = 0;
     timerEl = document.querySelector(".timer");
     timerEl.innerHTML = seconds;
 
-    distributeCards();
-}
-
-function distributeCards() {
-    const shuffledCards = getShuffledCards();
-    let cardsElements = '';
-    
-    for(let i = 0; i < shuffledCards.length; i++) {
-        cardsElements += getCardElementWithImage(shuffledCards[i]);
-    }
-
-    gameDivEl.innerHTML = cardsElements;
+    createCards();
+    renderCards();
     initTimerSeconds();
 }
 
-function initTimerSeconds() {
-    timerFunction = setInterval(() => {
+const createCards = function() {
+    cards = [];
+
+    const shuffledCardsImages = getShuffledImages();
+
+    shuffledCardsImages.forEach(function(imgName) {
+        cards.push({
+            imgName,
+            turned: false
+        });
+    });
+}
+
+const renderCards = function() {
+    document.querySelector(".game").innerHTML = cards.map(function(card, index) {
+        return `<div class="card ${card.turned ? 'turned' : ''}" data-index=${index} ${!card.turned ? 'onclick="turnCard(this)' : ''}">
+            <div class="back face">
+                <img src="images/front.png" alt="Frente da carta">
+            </div>
+            <div class="front face">
+                <img src="images/${card.imgName}" alt="Figura">
+            </div>
+        </div>`;
+    }).join('\n');
+}
+
+const initTimerSeconds = function() {
+    timerFunction = setInterval(function() {
         timerEl.innerHTML = ++seconds;
     }, MILLISECONDS);
 }
 
-function stopTimer() {
+const stopTimer = function() {
     clearInterval(timerFunction);
 }
 
-function getCardElementWithImage(imageName) {
-    return `<div class="card" onclick="turnCard(this)">
-        <div class="back face">
-            <img src="images/front.png" alt="Frente da carta">
-        </div>
-        <div class="front face">
-            <img src="images/${imageName}" alt="Figura">
-        </div>
-    </div>`;
-}
+const turnCard = function(cardEl) {
+    const cardIndex = Number(cardEl.dataset.index);
+    cards[cardIndex].turned = true;
 
-function turnCard(cardEl) {
     cardEl.classList.add("turned");
     cardEl.removeAttribute("onclick");
-    currentTurnedCards.push(cardEl);
+
+    currentTurnedCardsIndexes.push(cardIndex);
+
     movesAmount++;
 
     checkCardPair();
 }
 
-function checkCardPair() {
-    if(currentTurnedCards.length === 2) {
-        const areEqual = checkIfAreEqual(currentTurnedCards);
+const checkCardPair = function() {
+    if(currentTurnedCardsIndexes.length === 2) {
+        const [firstIndex, secondIndex] = currentTurnedCardsIndexes;
+        const areEqual = cards[firstIndex].imgName === cards[secondIndex].imgName;
 
         if(areEqual) checkIfWon();
-        else unturnCards(currentTurnedCards);
+        else unturnCards(currentTurnedCardsIndexes);
 
-        currentTurnedCards = [];
+        currentTurnedCardsIndexes = [];
     }
 }
 
-function checkIfWon() {
-    const turnedCardsAmount = gameDivEl.querySelectorAll(".turned").length;
+const checkIfWon = function() {
+    const everyCardIsTurned = cards.every(function(card) {
+        return card.turned;
+    });
 
-    if(turnedCardsAmount === cardsNumber) {
+    if(everyCardIsTurned) {
         stopTimer();
 
-        setTimeout(() => {
+        setTimeout(function() {
             alert(`Você ganhou em ${movesAmount} jogadas e em ${seconds} segundos!`); 
 
             askIfWantContinue();
@@ -107,7 +118,7 @@ function checkIfWon() {
     }
 }
 
-function askIfWantContinue() {
+const askIfWantContinue = function() {
     let userResponse;
     let responseIsInvalid;
 
@@ -126,46 +137,40 @@ function askIfWantContinue() {
     else alert("Obrigado por jogar Parrot Card Game! xD");
 }
 
-function checkIfAreEqual(cards) {
-    const cardsImages = [];
-
-    for(let i = 0; i < cards.length; i++) {
-        cardsImages.push(cards[i].querySelector('.front img').getAttribute("src"));
-    }
-
-    return cardsImages[0] === cardsImages[1];
-}
-
-function unturnCards(cards) {
-    setTimeout(() => {
-        for(let i = 0; i < cards.length; i++) {
-            cards[i].classList.remove("turned");
-            cards[i].setAttribute("onclick", "turnCard(this)");
-        }
+const unturnCards = function(cardsIndexes) {
+    setTimeout(function() {
+        cardsIndexes.forEach(function(cardIndex) {
+            const cardEl = document.querySelector(`.card[data-index='${cardIndex}']`);
+        
+            cardEl.classList.remove('turned');
+            cardEl.setAttribute('onclick', 'turnCard(this)');
+        
+            cards[cardIndex].turned = false;
+        });
     }, MILLISECONDS);
 }
 
-function getShuffledCards() {
+const getShuffledImages = function() {
     const duplicatedImagesArray = duplicateArrayItems(getRandomImagesList(cardsNumber/2));
 
     return shuffleArray(duplicatedImagesArray);
 }
 
-function getRandomImagesList(imagesNumber) {
+const getRandomImagesList = function(imagesNumber) {
     const shuffledArray = shuffleArray(imagesNames);
 
     return shuffledArray.slice(0, imagesNumber);
 }
 
-function shuffleArray(array) {
+const shuffleArray = function(array) {
     return array.sort(comparator);
 }
 
-function comparator() {
+const comparator = function() {
     return Math.random() - 0.5;
 }
 
-function duplicateArrayItems(array) {
+const duplicateArrayItems = function(array) {
     const target = [];
 
     for (let i = 0; i < array.length; i++) {
@@ -175,3 +180,5 @@ function duplicateArrayItems(array) {
 
     return target;
 }
+
+init();
