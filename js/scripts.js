@@ -1,4 +1,4 @@
-const MILLISECONDS = 1000;
+const ONE_SECOND = 1000;
 
 const imagesNames = [
     "bobrossparrot.gif",
@@ -69,7 +69,7 @@ const renderCards = function() {
 const initTimerSeconds = function() {
     timerFunction = setInterval(function() {
         timerEl.innerHTML = ++seconds;
-    }, MILLISECONDS);
+    }, ONE_SECOND);
 }
 
 const stopTimer = function() {
@@ -114,7 +114,7 @@ const checkIfWon = function() {
             alert(`Você ganhou em ${movesAmount} jogadas e em ${seconds} segundos!`); 
 
             askIfWantContinue();
-        }, MILLISECONDS);
+        }, ONE_SECOND);
     }
 }
 
@@ -147,7 +147,7 @@ const unturnCards = function(cardsIndexes) {
         
             cards[cardIndex].turned = false;
         });
-    }, MILLISECONDS);
+    }, ONE_SECOND);
 }
 
 const getShuffledImages = function() {
@@ -173,10 +173,10 @@ const comparator = function() {
 const duplicateArrayItems = function(array) {
     const target = [];
 
-    for (let i = 0; i < array.length; i++) {
-        target.push(array[i]);
-        target.push(array[i]);
-    }
+    array.forEach(function(arrayItem) {
+        target.push(arrayItem);
+        target.push(arrayItem);
+    })
 
     return target;
 }
